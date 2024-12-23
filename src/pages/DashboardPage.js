@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import EventsPage from "./EventPage";
 import TasksPage from "./TaskPage";
@@ -12,6 +12,8 @@ const DashboardPage = () => {
 
   return (
     <>
+      <Sidebar/>
+      <Outlet/>
     </>
      
 
