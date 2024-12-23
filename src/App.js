@@ -12,6 +12,9 @@ import AddTaskPage from "./components/AddTaskPage";
 import LoginPage from "./pages/LoginPage";
 import AddAttendeeForm from "./components/AddAttendeeForm";
 import UpdateEventForm from "./components/UpdateEventForm";
+import HomePage from "./pages/HomePage";
+import UserLoginPage from "./pages/UserLoginPage";
+import UserRegisterPage from "./pages/UserRegisterPage";
 
 const App = () => {
   return (
@@ -19,22 +22,30 @@ const App = () => {
       <ToastContainer />
 
       {/* Sidebar: fixed position on the left */}
-      <Sidebar />
+      
 
       {/* Main content area: takes up remaining space */}
-      <div className="flex-1 p-6 overflow-y-auto bg-gray-100 ml-64">
+      <div className="w-full">
         <Routes>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/events" element={<EventsPage />} />
-          <Route path="/tasks" element={<TasksPage />} />
-          <Route path="/attendees" element={<AttendeesPage />} />
-          <Route path="/events/add" element={<AddEventsPage />} />
-          <Route path="/event/:eventId" element={<EventDetailPage />} />
-          <Route path="/tasks/add-task" element={<AddTaskPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/dashboard" element={<DashboardPage />} >
+            <Route path="/dashboard/events" element={<EventsPage />} />
+            <Route path="/dashboard/tasks" element={<TasksPage />} />
+            <Route path="/dashboard/attendees" element={<AttendeesPage />} />
+            <Route path="/dashboard/events/add" element={<AddEventsPage />} />
+            <Route path="/dashboard/event/:eventId" element={<EventDetailPage />} />
+            <Route path="/dashboard/tasks/add-task" element={<AddTaskPage />} />
+          </Route>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/user-login" element={<UserLoginPage />} />
+          <Route path="/user-register" element={<UserRegisterPage />} />
           <Route path="/attendees/add" element={<AddAttendeeForm />} />
           <Route path="/events/update/:eventId" element={<UpdateEventForm />} />
 
+
+          <Route path="/user-dashboard" element={<DashboardPage/>}>
+
+          </Route>
         </Routes>
       </div>
     </div>
