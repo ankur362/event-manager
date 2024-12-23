@@ -10,7 +10,7 @@ const EventDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAttendeeModal, setShowAttendeeModal] = useState(false); // Show/Hide attendee modal
-  const [selectedTaskId, setSelectedTaskId] = useState(""); // Store selected task for assignment
+  const [selectedTaskId, setSelectedTaskId] = useState(''); // Store selected task for assignment
   const navigate = useNavigate();
 
   // Fetch tasks for the specific event
@@ -26,11 +26,11 @@ const EventDetailPage = () => {
         if (response.data.success) {
           setTasks(response.data.data.formattedTasks); // Set tasks data
         } else {
-          toast.error(response.data.message || "Failed to fetch tasks for this event.");
+          toast.error(response.data.message || 'Failed to fetch tasks for this event.');
         }
       } catch (err) {
         console.error(err);
-        setError("Error fetching tasks. Please try again later.");
+        setError('Error fetching tasks. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -50,27 +50,31 @@ const EventDetailPage = () => {
       if (response.data.success) {
         setAttendees(response.data.data.attendees); // Set attendees data
       } else {
-        toast.error(response.data.message || "Failed to fetch attendees.");
+        toast.error(response.data.message || 'Failed to fetch attendees.');
       }
     } catch (err) {
       console.error(err);
-      toast.error("Error fetching attendees. Please try again.");
+      toast.error('Error fetching attendees. Please try again.');
     }
   };
 
   // Open modal to assign an attendee to a task
   const openAssignModal = (taskId) => {
-    console.log("Opening modal for taskId:", taskId); // Debugging - log taskId
     setSelectedTaskId(taskId); // Set the selected taskId
     setShowAttendeeModal(true);
     fetchAttendees(); // Fetch attendees when modal is opened
   };
 
+  // Close the modal
+  const closeAssignModal = () => {
+    setShowAttendeeModal(false);
+    setSelectedTaskId(null);
+  };
+
   // Assign attendee to a task
   const assignAttendee = async (userId) => {
-    console.log("Assigning attendee to task. TaskId:", selectedTaskId, "UserId:", userId); // Debugging - log taskId and userId
     if (!selectedTaskId) {
-      toast.error("No task selected. Please try again.");
+      toast.error('No task selected. Please try again.');
       return;
     }
 
@@ -81,7 +85,7 @@ const EventDetailPage = () => {
         { withCredentials: true }
       );
       if (response.data.success) {
-        toast.success("Attendee assigned successfully!");
+        toast.success('Attendee assigned successfully!');
         // Refresh the task list to show updated attendee information
         const updatedTasks = tasks.map((task) => {
           if (task._id === selectedTaskId) {
@@ -91,18 +95,39 @@ const EventDetailPage = () => {
         });
         setTasks(updatedTasks);
       } else {
-        toast.error(response.data.message || "Failed to assign attendee.");
+        toast.error(response.data.message || 'Failed to assign attendee.');
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || "Error assigning attendee.");
+      toast.error(error.response?.data?.message || 'Error assigning attendee.');
     }
   };
 
-  // Close the modal
-  const closeAssignModal = () => {
-    setShowAttendeeModal(false);
-    setSelectedTaskId(null);
+  // Remove attendee from a task
+  const removeAttendee = async (taskId, userId) => {
+    try {
+      const response = await axios.post(
+        'http://localhost:4000/api/v1/admins/removeAttendee',
+        { taskid: taskId, userid: userId },
+        { withCredentials: true }
+      );
+      if (response.data.success) {
+        toast.success('Attendee removed successfully!');
+        // Refresh the task list to reflect the removal
+        const updatedTasks = tasks.map((task) => {
+          if (task._id === taskId) {
+            return { ...task, assignedAttendees: null };
+          }
+          return task;
+        });
+        setTasks(updatedTasks);
+      } else {
+        toast.error(response.data.message || 'Failed to remove attendee.');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || 'Error removing attendee.');
+    }
   };
 
   if (loading) {
@@ -119,7 +144,7 @@ const EventDetailPage = () => {
         <h1 className="text-4xl font-bold text-gray-800 mb-6 text-center">Tasks for Event</h1>
 
         {/* Task Table */}
-        {tasks.length > 0 ? (
+        {tasks && tasks.length > 0 ? (
           <table className="min-w-full bg-white border border-gray-200">
             <thead>
               <tr className="bg-gray-100">
@@ -137,28 +162,28 @@ const EventDetailPage = () => {
                   <td className="py-2 px-4">{task.status}</td>
                   <td className="py-2 px-4">{task.lastdate}</td>
                   <td className="py-2 px-4">
-                    {task.assignedAttendees && task.assignedAttendees.length > 0 ? (
-                      <ul>
-                        {task.assignedAttendees.map((attendee) => (
-                          <li key={attendee._id} className="text-sm text-gray-600">
-                            {attendee.fullName} ({attendee.email})
-                          </li>
-                        ))}
-                      </ul>
+                    {task.assignedAttendees ? (
+                      <p>{task.assignedAttendees.fullName}</p>
                     ) : (
                       <p className="text-sm text-gray-600">No attendees assigned</p>
                     )}
                   </td>
                   <td className="py-2 px-4">
-                    <button
-                       onClick={() => {
-                        console.log("Opening modal for task ID:", task._id);  // Debugging log
-                        openAssignModal(task.taskId);  // Open modal for the task
-                      }}// Open modal for the task
-                      className="mt-2 bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700"
-                    >
-                      Assign Attendee
-                    </button>
+                    {task.assignedAttendees ? (
+                      <button
+                        onClick={() => removeAttendee(task._id, task.assignedAttendees._id)}
+                        className="mt-2 bg-red-600 text-white py-2 px-6 rounded-md hover:bg-red-700"
+                      >
+                        Remove Attendee
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => openAssignModal(task._id)}
+                        className="mt-2 bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700"
+                      >
+                        Assign Attendee
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -191,37 +216,43 @@ const EventDetailPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {attendees.map((attendee) => (
-                  <tr key={attendee._id} className="border-t border-gray-200">
-                    <td className="py-2 px-4">
-                      <img
-                        src={attendee.coverImage || '/default-cover.jpg'}
-                        alt={attendee.fullName}
-                        className="w-12 h-12 rounded-full object-cover"
-                      />
-                    </td>
-                    <td className="py-2 px-4">{attendee.fullName}</td>
-                    <td className="py-2 px-4">{attendee.email}</td>
-                    <td className="py-2 px-4">
-                      <button
-                        onClick={() => assignAttendee(attendee._id)} // Assign attendee
-                        className="bg-indigo-600 text-white py-1 px-4 rounded-md hover:bg-indigo-700"
-                      >
-                        Assign
-                      </button>
+                {attendees && attendees.length > 0 ? (
+                  attendees.map((attendee) => (
+                    <tr key={attendee._id} className="border-t border-gray-200">
+                      <td className="py-2 px-4">
+                        <img
+                          src={attendee.coverImage || '/default-cover.jpg'}
+                          alt={attendee.fullName}
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
+                      </td>
+                      <td className="py-2 px-4">{attendee.fullName}</td>
+                      <td className="py-2 px-4">{attendee.email}</td>
+                      <td className="py-2 px-4">
+                        <button
+                          onClick={() => assignAttendee(attendee._id)}
+                          className="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700"
+                        >
+                          Assign
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="py-2 px-4 text-center text-gray-500">
+                      No attendees available
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={closeAssignModal}
-                className="bg-gray-600 text-white py-2 px-6 rounded-md hover:bg-gray-700"
-              >
-                Close
-              </button>
-            </div>
+            <button
+              onClick={closeAssignModal}
+              className="mt-4 bg-gray-600 text-white py-2 px-6 rounded-md hover:bg-gray-700 transition duration-300"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

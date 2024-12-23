@@ -11,6 +11,7 @@ import EventDetailPage from "./components/EventDetailPage";
 import AddTaskPage from "./components/AddTaskPage";
 import LoginPage from "./pages/LoginPage";
 import AddAttendeeForm from "./components/AddAttendeeForm";
+import UpdateEventForm from "./components/UpdateEventForm";
 
 const App = () => {
   return (
@@ -32,6 +33,8 @@ const App = () => {
           <Route path="/tasks/add-task" element={<AddTaskPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/attendees/add" element={<AddAttendeeForm />} />
+          <Route path="/events/update/:eventId" element={<UpdateEventForm />} />
+
         </Routes>
       </div>
     </div>

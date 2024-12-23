@@ -57,6 +57,13 @@ const EventPage = () => {
     }
   };
 
+  // Calculate task completion percentage
+  const calculateCompletionPercentage = (event) => {
+    const totalTasks = Array.isArray(event.task) ? event.task.length : 0; // Ensure task is an array
+    const completedTasks = Array.isArray(event.taskCompleted) ? event.taskCompleted.length : 0; // Ensure taskCompleted is an array
+    return totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+  };
+
   if (loading) {
     return <div className="text-center text-xl font-bold text-gray-500">Loading...</div>;
   }
@@ -92,10 +99,20 @@ const EventPage = () => {
                   <h2 className="text-2xl font-semibold text-gray-800">{event.title}</h2> {/* Title updated */}
                   <p className="text-lg text-gray-600 mt-2">{event.description}</p>
                   <div className="mt-4 text-sm text-gray-500">
-                    <p>Attendees: {event.totalAttendees
-                    }</p>
+                    <p>Attendees: {event.totalAttendees}</p>
                     <p>Location: {event.location}</p>
                     <p>Date: {event.date}</p>
+                  </div>
+
+                  {/* Display task completion percentage as a progress bar */}
+                  <div className="mt-4">
+                    <p className="font-semibold text-gray-700">Task Completion: {calculateCompletionPercentage(event)}%</p>
+                    <div className="w-full bg-gray-300 rounded-full h-2.5 mt-2">
+                      <div
+                        className="bg-indigo-600 h-2.5 rounded-full"
+                        style={{ width: `${calculateCompletionPercentage(event)}%` }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
 

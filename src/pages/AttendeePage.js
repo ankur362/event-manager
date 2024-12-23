@@ -116,7 +116,7 @@ const AttendeePage = () => {
                       attendee.assignedAttendees ? "text-green-600" : "text-red-600"
                     } font-semibold`}
                   >
-                    {attendee.assignedAttendees ? "Assigned" : "Not Assigned"}
+                    {attendee.task ? "Assigned" : "Not Assigned"}
                   </span>
                 </div>
 
