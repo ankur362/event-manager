@@ -39,7 +39,7 @@ const EventPage = () => {
   }, []);
 
   const handleAddEventClick = () => {
-    navigate('/events/add'); // Navigate to the add event form
+    navigate('/dashboard/events/add'); // Navigate to the add event form
   };
 
   const handleDeleteEvent = async (eventId) => {
@@ -59,8 +59,8 @@ const EventPage = () => {
 
   // Calculate task completion percentage
   const calculateCompletionPercentage = (event) => {
-    const totalTasks = Array.isArray(event.task) ? event.task.length : 0; // Ensure task is an array
-    const completedTasks = Array.isArray(event.taskCompleted) ? event.taskCompleted.length : 0; // Ensure taskCompleted is an array
+    const totalTasks = Array.isArray(event?.task) ? event.task.length : 0; // Ensure task is an array
+    const completedTasks = Array.isArray(event?.taskCompleted) ? event.taskCompleted.length : 0; // Ensure taskCompleted is an array
     return totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
   };
 
@@ -89,24 +89,30 @@ const EventPage = () => {
         {events.length === 0 ? (
           <div className="text-center text-lg text-gray-600">No events available at the moment.</div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex flex-wrap gap-6">
             {events.map((event) => (
               <div
-                key={event._id}
-                className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
+                key={event?._id}  // Use optional chaining to prevent errors if event is null/undefined
+                className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300 w-[25%]" 
               >
                 <div>
-                  <h2 className="text-2xl font-semibold text-gray-800">{event.title}</h2> {/* Title updated */}
-                  <p className="text-lg text-gray-600 mt-2">{event.description}</p>
+                  <h2 className="text-2xl font-semibold text-gray-800">
+                    {event?.title || 'Event Title Unavailable'}  {/* Fallback if title is undefined */}
+                  </h2>
+                  <p className="text-lg text-gray-600 mt-2">
+                    {event?.description || 'No description available'}  {/* Fallback if description is undefined */}
+                  </p>
                   <div className="mt-4 text-sm text-gray-500">
-                    <p>Attendees: {event.totalAttendees}</p>
-                    <p>Location: {event.location}</p>
-                    <p>Date: {event.date}</p>
+                    <p>Attendees: {event?.totalAttendees || 'No attendees'}</p>
+                    <p>Location: {event?.location || 'Location not available'}</p>
+                    <p>Date: {event?.date || 'Date not available'}</p>
                   </div>
 
                   {/* Display task completion percentage as a progress bar */}
                   <div className="mt-4">
-                    <p className="font-semibold text-gray-700">Task Completion: {calculateCompletionPercentage(event)}%</p>
+                    <p className="font-semibold text-gray-700">
+                      Task Completion: {calculateCompletionPercentage(event)}%
+                    </p>
                     <div className="w-full bg-gray-300 rounded-full h-2.5 mt-2">
                       <div
                         className="bg-indigo-600 h-2.5 rounded-full"
@@ -119,21 +125,21 @@ const EventPage = () => {
                 {/* Buttons for View, Edit, and Delete */}
                 <div className="mt-4 flex space-x-4">
                   <Link
-                    to={`/event/${event._id}`}
+                    to={`/dashboard/event/${event?._id}`}  // Use optional chaining
                     className="text-indigo-600 hover:text-indigo-800 font-semibold"
                   >
                     View Details
                   </Link>
 
                   <Link
-                    to={`/events/update/${event._id}`}
+                    to={`/dashboard/events/update/${event?._id}`}  // Use optional chaining
                     className="text-yellow-600 hover:text-yellow-800 font-semibold"
                   >
                     Update
                   </Link>
 
                   <button
-                    onClick={() => handleDeleteEvent(event._id)}
+                    onClick={() => handleDeleteEvent(event?._id)}  // Use optional chaining
                     className="text-red-600 hover:text-red-800 font-semibold"
                   >
                     Delete

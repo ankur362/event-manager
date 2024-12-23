@@ -52,7 +52,7 @@ const UserRegisterPage = () => {
       );
 
       toast.success(response.data.message);
-      navigate("//user-dashboard");
+      navigate("/user-home");
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Something went wrong!";
       toast.error(errorMessage);

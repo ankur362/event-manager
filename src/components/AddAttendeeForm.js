@@ -11,6 +11,7 @@ const AddAttendeeForm = () => {
     password: "",
     coverImage: null,
   });
+  const [coverImagePreview, setCoverImagePreview] = useState(null); // To store the preview of the image
 
   const navigate = useNavigate();
 
@@ -20,7 +21,22 @@ const AddAttendeeForm = () => {
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, coverImage: e.target.files[0] });
+    const file = e.target.files[0];
+    setFormData({ ...formData, coverImage: file });
+
+    // Generate a preview URL for the selected image
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFormData({ ...formData, coverImage: null });
+    setCoverImagePreview(null); // Remove preview
   };
 
   const handleSubmit = async (e) => {
@@ -54,7 +70,7 @@ const AddAttendeeForm = () => {
 
       if (response.data.success) {
         toast.success(response.data.message);
-        navigate("/attendees"); // Navigate back to the attendee list
+        navigate("/dashboard/attendees"); // Navigate back to the attendee list
       } else {
         toast.error(response.data.message);
       }
@@ -67,6 +83,24 @@ const AddAttendeeForm = () => {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-4xl mx-auto bg-white p-8 shadow-md rounded-lg">
+        {/* Image Preview at the Top */}
+        {coverImagePreview && (
+          <div className="flex justify-center mb-6">
+            <img
+              src={coverImagePreview}
+              alt="Cover Preview"
+              className="w-32 h-32 object-cover rounded-full border-4 border-indigo-600"
+            />
+            <button
+              type="button"
+              onClick={handleRemoveImage}
+              className="mt-2 ml-4 text-red-600 hover:text-red-800"
+            >
+              Remove Image
+            </button>
+          </div>
+        )}
+
         <h1 className="text-2xl font-bold text-gray-700 mb-6">Add Attendee</h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

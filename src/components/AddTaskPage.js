@@ -92,9 +92,9 @@ const AddTaskPage = () => {
       </div>
 
       {selectedEventId && (
-        <form onSubmit={handleSubmit} className="bg-white p-6 shadow rounded-lg">
+        <form onSubmit={handleSubmit} className="bg-white p-6 shadow rounded-lg w-[80%]">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">Add Task Details</h2>
-          <div className="mb-4">
+          <div className="mb-4 w-full">
             <label className="block text-gray-700 mb-2" htmlFor="agenda">
               Agenda
             </label>

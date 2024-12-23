@@ -19,14 +19,14 @@ const UserLoginPage = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/api/v1/admins/login",
+        "http://localhost:4000/api/v1/users/login",
         { email, password },
         { withCredentials: true }
       );
 
       toast.success(response.data.message);
       setIsLoggedIn(true);
-      navigate("/dashboard");  // Redirect to dashboard after successful login
+      navigate("/user-home");  // Redirect to dashboard after successful login
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Something went wrong!";
       toast.error(errorMessage);

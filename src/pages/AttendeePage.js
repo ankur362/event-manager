@@ -26,6 +26,8 @@ const AttendeePage = () => {
         { withCredentials: true }
       );
 
+      console.log(response.data); // Debug the API response to see if task field exists
+
       if (response.data.success) {
         setAttendees(response.data.data.attendees);
       } else {
@@ -73,8 +75,8 @@ const AttendeePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-100 py-4 px-2 sm:px-6 lg:px-2">
+      <div className="max-w-7xl mx-1">
         <h1 className="text-3xl font-bold text-gray-700 mb-6">Attendees</h1>
 
         {/* Button to navigate to Add Attendee Form */}
@@ -94,41 +96,51 @@ const AttendeePage = () => {
         {/* Display attendees if available */}
         {attendees.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {attendees.map((attendee) => (
-              <div
-                key={attendee._id}
-                className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105"
-              >
-                <div className="flex items-center space-x-4">
-                  <img
-                    src={attendee.coverImage || "http://res.cloudinary.com/ankur786/image/upload/v1734916416/eljjg3ta2ynvoo6dlzps.png"}
-                    alt={attendee.fullName}
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-800">{attendee.fullName}</h2>
-                    <p className="text-gray-600">{attendee.email}</p>
-                  </div>
-                </div>
-                <div className="mt-4 text-sm text-gray-500">
-                  <span
-                    className={`${
-                      attendee.assignedAttendees ? "text-green-600" : "text-red-600"
-                    } font-semibold`}
-                  >
-                    {attendee.task ? "Assigned" : "Not Assigned"}
-                  </span>
-                </div>
+            {attendees.map((attendee) => {
+              // Debug the task field for each attendee
+              console.log(attendee.task); 
 
-                {/* Delete button */}
-                <button
-                  onClick={() => deleteAttendee(attendee._id)}
-                  className="mt-4 bg-red-600 text-white py-2 px-6 rounded-md hover:bg-red-700 transition duration-300"
+              return (
+                <div
+                  key={attendee._id}
+                  className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105"
                 >
-                  Delete
-                </button>
-              </div>
-            ))}
+                  <div className="flex items-center space-x-4">
+                    <img
+                      src={attendee.coverImage || "http://res.cloudinary.com/ankur786/image/upload/v1734916416/eljjg3ta2ynvoo6dlzps.png"}
+                      alt={attendee.fullName}
+                      className="w-16 h-16 rounded-full object-cover"
+                    />
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800">{attendee.fullName}</h2>
+                      <p className="text-gray-600">{attendee.email}</p>
+                    </div>
+                  </div>
+                  <div className="mt-4 text-sm text-gray-500">
+                    <span
+                      className={`${
+                        // Check if attendee has a task or not
+                        attendee.task && Object.keys(attendee.task).length > 0
+                          ? "text-green-600"
+                          : "text-red-600"
+                      } font-semibold`}
+                    >
+                      {attendee.task && Object.keys(attendee.task).length > 0
+                        ? "Assigned"
+                        : "Not Assigned"}
+                    </span>
+                  </div>
+
+                  {/* Delete button */}
+                  <button
+                    onClick={() => deleteAttendee(attendee._id)}
+                    className="mt-4 bg-red-600 text-white py-2 px-6 rounded-md hover:bg-red-700 transition duration-300"
+                  >
+                    Delete
+                  </button>
+                </div>
+              );
+            })}
           </div>
         ) : (
           !loading && <div className="text-center text-gray-500">No attendees available.</div>

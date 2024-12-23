@@ -11,10 +11,10 @@ const DashboardPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(true); // Assuming the user is logged in
 
   return (
-    <>
+    <div className="relative left-[16rem] w-full">
       <Sidebar/>
       <Outlet/>
-    </>
+    </div>
      
 
   );

@@ -33,7 +33,7 @@ const Sidebar = () => {
       <ul className="mt-6">
         <li>
           <NavLink
-            to="/events"
+            to="/dashboard/events"
             className={({ isActive }) =>
               `block py-2 px-4 hover:bg-gray-700 text-center ${isActive ? "bg-gray-900" : ""}`
             }
@@ -43,7 +43,7 @@ const Sidebar = () => {
         </li>
         <li>
           <NavLink
-            to="/tasks"
+            to="/dashboard/tasks"
             className={({ isActive }) =>
               `block py-2 px-4 hover:bg-gray-700 text-center ${isActive ? "bg-gray-900" : ""}`
             }
@@ -53,7 +53,7 @@ const Sidebar = () => {
         </li>
         <li>
           <NavLink
-            to="/attendees"
+            to="/dashboard/attendees"
             className={({ isActive }) =>
               `block py-2 px-4 hover:bg-gray-700 text-center ${isActive ? "bg-gray-900" : ""}`
             }

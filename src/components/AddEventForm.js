@@ -49,7 +49,7 @@ const AddEventsPage = () => {
       setShowForm(false);
 
       // Navigate to events page after successful event creation
-      navigate('/events'); // Redirect to the events page
+      navigate('/dashboard/events'); // Redirect to the events page
     } catch (error) {
       console.error('Error adding event:', error);
       toast.error('Error adding event. Please try again.', { position: "top-right", autoClose: 5000 }); // Show error toast
@@ -57,7 +57,7 @@ const AddEventsPage = () => {
   };
 
   return (
-    <div>
+    <div className='w-[80%] flex flex-col items-center'>
       <h1 className="text-3xl font-bold text-gray-700 mb-4">Add New Event</h1>
 
       {/* Button to show/hide AddEventForm */}
@@ -70,7 +70,7 @@ const AddEventsPage = () => {
 
       {/* Conditional Rendering of AddEventForm */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 w-[80%] mx-auto shadow-lg  rounded-lg p-4">
           <div className="mb-4">
             <label className="block text-sm font-semibold" htmlFor="name">
               Event Name

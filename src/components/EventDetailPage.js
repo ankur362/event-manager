@@ -89,167 +89,86 @@ const EventDetailPage = () => {
         // Refresh the task list to show updated attendee information
         const updatedTasks = tasks.map((task) => {
           if (task._id === selectedTaskId) {
-            return { ...task, assignedAttendees: [...task.assignedAttendees, userId] };
+            task.assignedTo = userId;
           }
           return task;
         });
         setTasks(updatedTasks);
+        closeAssignModal();
       } else {
-        toast.error(response.data.message || 'Failed to assign attendee.');
+        toast.error('Failed to assign attendee.');
       }
-    } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.message || 'Error assigning attendee.');
-    }
-  };
-
-  // Remove attendee from a task
-  const removeAttendee = async (taskId, userId) => {
-    try {
-      const response = await axios.post(
-        'http://localhost:4000/api/v1/admins/removeAttendee',
-        { taskid: taskId, userid: userId },
-        { withCredentials: true }
-      );
-      if (response.data.success) {
-        toast.success('Attendee removed successfully!');
-        // Refresh the task list to reflect the removal
-        const updatedTasks = tasks.map((task) => {
-          if (task._id === taskId) {
-            return { ...task, assignedAttendees: null };
-          }
-          return task;
-        });
-        setTasks(updatedTasks);
-      } else {
-        toast.error(response.data.message || 'Failed to remove attendee.');
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.message || 'Error removing attendee.');
+    } catch (err) {
+      console.error(err);
+      toast.error('Error assigning attendee. Please try again.');
     }
   };
 
   if (loading) {
-    return <div className="text-center text-xl font-bold text-gray-500">Loading...</div>;
+    return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div className="text-center text-xl font-bold text-red-500">{error}</div>;
+    return <div>{error}</div>;
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-800 mb-6 text-center">Tasks for Event</h1>
-
-        {/* Task Table */}
-        {tasks && tasks.length > 0 ? (
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="py-2 px-4 text-left">Agenda</th>
-                <th className="py-2 px-4 text-left">Status</th>
-                <th className="py-2 px-4 text-left">Due Date</th>
-                <th className="py-2 px-4 text-left">Assigned Attendees</th>
-                <th className="py-2 px-4 text-left">Actions</th>
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-2xl font-bold text-gray-800 mb-4">Event Details</h1>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse bg-white shadow-lg rounded-md">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="p-3 border">Task</th>
+              <th className="p-3 border">Assigned To</th>
+              <th className="p-3 border">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tasks.map((task) => (
+              <tr key={task.taskId} className="hover:bg-gray-100">
+                <td className="p-3 border">{task.agenda}</td>
+                <td className="p-3 border">
+                  {task.assignedAttendees ? task.assignedAttendees.fullName : 'Not assigned yet'}
+                </td>
+                <td className="p-3 border">
+                  {task.assignedAttendees?.fullName ? (
+                    <span className="text-green-600">Assigned</span>
+                  ) : (
+                    <button
+                      onClick={() => openAssignModal(task.taskId)}
+                      className="bg-indigo-600 text-white py-1 px-3 rounded-md hover:bg-indigo-700 transition duration-200"
+                    >
+                      Assign
+                    </button>
+                  )}
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {tasks.map((task) => (
-                <tr key={task._id} className="border-t border-gray-200">
-                  <td className="py-2 px-4">{task.agenda}</td>
-                  <td className="py-2 px-4">{task.status}</td>
-                  <td className="py-2 px-4">{task.lastdate}</td>
-                  <td className="py-2 px-4">
-                    {task.assignedAttendees ? (
-                      <p>{task.assignedAttendees.fullName}</p>
-                    ) : (
-                      <p className="text-sm text-gray-600">No attendees assigned</p>
-                    )}
-                  </td>
-                  <td className="py-2 px-4">
-                    {task.assignedAttendees ? (
-                      <button
-                        onClick={() => removeAttendee(task._id, task.assignedAttendees._id)}
-                        className="mt-2 bg-red-600 text-white py-2 px-6 rounded-md hover:bg-red-700"
-                      >
-                        Remove Attendee
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => openAssignModal(task._id)}
-                        className="mt-2 bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700"
-                      >
-                        Assign Attendee
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="text-gray-600">No tasks found for this event.</p>
-        )}
-
-        <button
-          onClick={() => navigate('/events')}
-          className="mt-6 bg-gray-600 text-white py-2 px-6 rounded-md hover:bg-gray-700 transition duration-300"
-        >
-          Back to Events
-        </button>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* Modal to show all attendees */}
       {showAttendeeModal && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg max-w-4xl w-full">
-            <h2 className="text-xl font-semibold mb-4">Select an Attendee</h2>
-            <table className="min-w-full bg-white border border-gray-200">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="py-2 px-4 text-left">Cover Image</th>
-                  <th className="py-2 px-4 text-left">Name</th>
-                  <th className="py-2 px-4 text-left">Email</th>
-                  <th className="py-2 px-4 text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {attendees && attendees.length > 0 ? (
-                  attendees.map((attendee) => (
-                    <tr key={attendee._id} className="border-t border-gray-200">
-                      <td className="py-2 px-4">
-                        <img
-                          src={attendee.coverImage || '/default-cover.jpg'}
-                          alt={attendee.fullName}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                      </td>
-                      <td className="py-2 px-4">{attendee.fullName}</td>
-                      <td className="py-2 px-4">{attendee.email}</td>
-                      <td className="py-2 px-4">
-                        <button
-                          onClick={() => assignAttendee(attendee._id)}
-                          className="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700"
-                        >
-                          Assign
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="py-2 px-4 text-center text-gray-500">
-                      No attendees available
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-md shadow-lg">
+            <h3 className="text-lg font-bold mb-4">Select an Attendee</h3>
+            <ul className="space-y-2">
+              {attendees.map((attendee) => (
+                <li key={attendee._id}>
+                  <button
+                    onClick={() => assignAttendee(attendee._id)}
+                    className="w-full flex items-center gap-1 text-left bg-gray-100 p-2 rounded hover:bg-gray-200 transition duration-150"
+                  >
+                    <img src={attendee.coverImage} className='size-[20px] rounded-full' alt="" />
+                    {attendee.fullName}
+                  </button>
+                </li>
+              ))}
+            </ul>
             <button
               onClick={closeAssignModal}
-              className="mt-4 bg-gray-600 text-white py-2 px-6 rounded-md hover:bg-gray-700 transition duration-300"
+              className="mt-4 bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition duration-200"
             >
               Close
             </button>

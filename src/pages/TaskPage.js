@@ -55,7 +55,7 @@ const TaskPage = () => {
 
   // Navigate to Add Task Page
   const handleAddTaskClick = () => {
-    navigate("/tasks/add-task"); // Navigate to the add task page
+    navigate("/dashboard/tasks/add-task"); // Navigate to the add task page
   };
 
   useEffect(() => {
@@ -73,7 +73,7 @@ const TaskPage = () => {
         Add Task
       </button>
 
-      <div className="mt-6">
+      <div className="mt-6 flex flex-wrap gap-4">
         {Array.isArray(tasks) && tasks.length > 0 ? (
           tasks.map((task) => (
             <div key={task._id} className="bg-white p-4 rounded shadow mb-4">
@@ -83,7 +83,7 @@ const TaskPage = () => {
               <p>
                 Related Event:{" "}
                 {typeof task.relatedEvent === "object"
-                  ? task.relatedEvent.name
+                  ? task.relatedEvent?.name
                   : task.relatedEvent}
               </p>
 
